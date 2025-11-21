@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from student_management_app.models import CustomUser, Subjects,NotificationStaff ,Courses,SessionYearModel ,Students ,Staffs ,Attendance,AttendanceReport,LeaveReportStaff,FeedbackStaff
 from django.http import HttpResponse,JsonResponse 
 from django.core import serializers 
@@ -238,19 +239,17 @@ def staff_profile_save(request):
             return HttpResponseRedirect(reverse("staff_profile"))
         
         
+_access_token_cache = {"token": None, "expiry": 0}
+
 @csrf_exempt
 def staff_fcmtoken_save(request):
-    token = request.POST.get("token")
+    token=request.POST.get("token")
     try:
-        staff = Staffs.objects.get(admin__id=request.user.id)   # OR admin=request.user
-        staff.fcm_token = token
+        staff=Staffs.objects.get(admin=request.user.id)
+        staff.fcm_token=token
         staff.save()
         return HttpResponse("True")
-    except Staffs.DoesNotExist:
-        return HttpResponse("False")
-    except Exception as e:
-        # helpful debug logging while developing
-        print("Error saving token:", e)
+    except:
         return HttpResponse("False")
 
 def staff_all_notification(request):

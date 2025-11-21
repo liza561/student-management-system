@@ -85,7 +85,7 @@ urlpatterns = [
     path('send_student_notification', Hodviews.send_student_notification,name="send_student_notification"),
     path('send_staff_notification', Hodviews.send_staff_notification,name="send_staff_notification"),
     #path('firebase-messaging-sw.js',views.showFirebaseJS,name="show_firebase_js"),    
-    
+    #path('save-fcm-token/', Hodviews.save_fcm_token, name='save_fcm_token'),
     
     
     
@@ -108,7 +108,6 @@ urlpatterns = [
     path('staff_profile_save', StaffViews.staff_profile_save,name="staff_profile_save"),
     path('staff_fcmtoken_save', StaffViews.staff_fcmtoken_save, name="staff_fcmtoken_save"),
     path('staff_all_notification', StaffViews.staff_all_notification, name="staff_all_notification"),
-    path("staff_save_fcm_token/", views.staff_save_fcm_token, name="staff_save_fcm_token"),
     #path('staff_add_result', StaffViews.staff_add_result, name="staff_add_result"),
     #path('save_student_result', StaffViews.save_student_result, name="save_student_result"),
     #path('edit_student_result',EditResultViewClass.as_view(), name="edit_student_result"),

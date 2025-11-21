@@ -9,7 +9,7 @@ from student_management_app.emailbackend import EmailBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from student_management_app.models import Courses, CustomUser, Staffs
+from student_management_app.models import Courses, CustomUser, Staffs, Students
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
@@ -57,17 +57,7 @@ def showFirebaseJS(request):
     js = render_to_string('firebase-messaging-sw.js')
     return HttpResponse(js, content_type="application/javascript")
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
-@csrf_exempt
-def staff_save_fcm_token(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        token = data.get("token")
-        try:
-            staff = Staffs.objects.get(admin=request.user.id)
-            staff.fcm_token = token
-            staff.save()
-            return JsonResponse({"status": "success"})
-        except Staffs.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "Staff not found"}, status=404)
-    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)

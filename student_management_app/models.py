@@ -35,7 +35,7 @@ class Staffs(models.Model):
     address = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    fcm_token = models.TextField(default="", null=True, blank=True)
+    fcm_token = models.TextField( null=True, blank=True)
     objects = models.Manager()
 
 class Courses(models.Model):
@@ -64,7 +64,7 @@ class Students(models.Model):
     session_year_id=models.ForeignKey(SessionYearModel,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    fcm_token = models.TextField(default="", null=True, blank=True)
+    fcm_token = models.TextField( null=True, blank=True)
     objects = models.Manager()
 
 class Attendance(models.Model):
@@ -138,8 +138,11 @@ class NotificationStaff(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
-    @receiver(post_save, sender=CustomUser)
-    def create_user_profile(sender, instance, created, **kwargs):
+    
+    
+
+@receiver(post_save, sender=CustomUser)
+def create_user_profile(sender, instance, created, **kwargs):
             AdminHOD = apps.get_model('student_management_app', 'AdminHOD')
             Staffs = apps.get_model('student_management_app', 'Staffs')
             Students = apps.get_model('student_management_app', 'Students')
@@ -151,8 +154,8 @@ class NotificationStaff(models.Model):
                 if instance.user_type==3:
                     Students.objects.create(admin=instance,course_id=Courses.objects.get(id=1), session_year_id=SessionYearModel.objects.get(id=1), address="", gender="", profile_pic="")
                  
-    @receiver(post_save, sender=CustomUser)
-    def save_user_profile(sender, instance, **kwargs):
+@receiver(post_save, sender=CustomUser)
+def save_user_profile(sender, instance, **kwargs):
             if instance.user_type==1:
                 instance.adminhod.save()
                 if instance.user_type==2:

@@ -32,7 +32,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Application definition
 
@@ -89,7 +89,7 @@ DATABASES = {
         #'NAME':'student_management_system',
         #'USER':'student_management_system',
         #'PASSWORD':'student_management_password',
-        #'HOST':'localhost',
+        'HOST':'localhost',
     }
 }
 
@@ -129,7 +129,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 # (Optional) Directory for global static files
 STATICFILES_DIRS = [

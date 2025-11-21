@@ -261,8 +261,8 @@ var csrftoken = getCookie('csrftoken');
     messaging.onMessage(function (payload) {
         console.log(payload);
         const notificationOption = {
-            body: payload.notification.body,
-            icon: payload.notification.icon
+            body: notification.body,
+            icon: notification.icon
         };
 
         if (Notification.permission === "granted") {

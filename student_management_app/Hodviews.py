@@ -3,6 +3,7 @@ from fileinput import filename
 import re
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from turtle import st
 from django.forms import DateField
 from django.http import HttpResponse, HttpResponseRedirect
@@ -17,6 +18,9 @@ import json
 import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
+import time
+from firebase_admin import messaging
+from django.contrib.auth.models import User
 
 def admin_home(request):
     student_count1=Students.objects.all().count()
@@ -539,7 +543,6 @@ def admin_send_notification_staff(request):
     staffs=Staffs.objects.all()
     return render(request,"Hod_templates/staff_notification.html",{"staffs":staffs})
 
-import time
 
 _access_token_cache = {
     "token": None,
@@ -551,120 +554,72 @@ def get_access_token():
     SERVICE_ACCOUNT_FILE = "serviceAccountKey.json"
 
     now = time.time()
-    # If token is valid, return cached token
     if _access_token_cache["token"] and _access_token_cache["expiry"] > now + 60:
         return _access_token_cache["token"]
 
     credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE, scopes=SCOPES
     )
-
     request = google.auth.transport.requests.Request()
     credentials.refresh(request)
-
-    _access_token_cache["token"] = credentials.token
-    _access_token_cache["expiry"] = credentials.expiry.timestamp() if credentials.expiry else now + 3500
-
+    #_access_token_cache["token"] = credentials.token
+    #_access_token_cache["expiry"] = credentials.expiry.timestamp() if credentials.expiry else now + 3500
     return credentials.token
-
 
 @csrf_exempt
 def send_student_notification(request):
-    id = request.POST.get("id")
-    message = request.POST.get("message")
+    student_id = request.POST.get("id")
+    message_text = request.POST.get("message")
 
     try:
-        student = Students.objects.get(admin=id)
-        token = student.fcm_token
+        stu = Students.objects.get(admin=student_id)
+        token = stu.fcm_token
 
-        if token is None or token == "":
-            return HttpResponse("False")   # No FCM token
+        if not token:
+            return JsonResponse({"success": False, "message": "No FCM Token"})
 
-        url = "https://fcm.googleapis.com/v1/projects/student-1067a/messages:send"
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="Student Management System",
+                body=message_text,
+            ),
+            token=token
+        )
 
-        access_token= get_access_token()
-        print(access_token)
-        headers = {
-        "Content-Type": "application/json",
-        "Authorization": "15ba1cb44249f19281786cc3c1230cd791a9f0d5" + settings.FCM_SERVER_KEY
-        }
-
-        body = {
-            "message": {
-                "token": token,
-                "notification": {
-                    "title": "Student Management System",
-                    "body": message
-                },
-                "data": {
-                    "click_action": "FLUTTER_NOTIFICATION_CLICK"
-                }
-            }
-        }
-
-        response = requests.post(url, headers=headers, json=body)
-        print("FCM STATUS:", response.status_code)
-        print("FCM RESPONSE:", response.text)
-
-
-        if response.status_code == 200:
-            # Save notification in DB
-            notification_obj = NotificationStudent(student_id=student, message=message)
-            notification_obj.save()
-
-            return HttpResponse("True")
-
-        else:
-            print(response.text)
-            return HttpResponse("False")
+        messaging.send(message)
+        return JsonResponse({"success": True})
 
     except Exception as e:
-        print("Error:", e)
-        return HttpResponse("False")
+        return JsonResponse({"success": False, "message": str(e)})
 
 
 @csrf_exempt
 def send_staff_notification(request):
+    staff_id = request.POST.get("id")
+    message_text = request.POST.get("message")
+
     try:
-        data = request.POST
-        staff_id = data.get("id")  # optional: if None, send to all
-        message = data.get("message")
+        staff = Staffs.objects.get(id=staff_id)
+        token = staff.fcm_token
 
-        if not message:
-            return HttpResponse("False")
+        if not token:
+            return JsonResponse({"success": False, "message": "No FCM Token"})
 
-        # Determine recipients
-        if staff_id:
-            staff_list = [Staffs.objects.get(admin=staff_id)]
-        else:
-            staff_list = Staffs.objects.exclude(fcm_token__isnull=True).exclude(fcm_token__exact="")
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="Student Management System",
+                body=message_text,
+            ),
+            token=token
+        )
 
-        access_token = get_access_token()
-        url = "https://fcm.googleapis.com/v1/projects/student-1067a/messages:send"
-
-        for staff in staff_list:
-            token = staff.fcm_token
-            if not token:
-                print(f"No FCM token for {staff.admin.username}")
-                continue
-
-            body = {
-                "message": {
-                    "token": token,
-                    "notification": {"title": "SMS", "body": message},
-                    "webpush": {"fcm_options": {"link": "https://yourdomain.com/staff_all_notification"}}
-                }
-            }
-
-            headers = {"Content-Type": "application/json", "Authorization": f"Bearer {access_token}"}
-            response = requests.post(url, headers=headers, data=json.dumps(body))
-            print("FCM Response:", response.text)
-
-            # Save in DB
-            NotificationStaff.objects.create(staff_id=staff, message=message)
-
-        return HttpResponse("True")
+        messaging.send(message)
+        return JsonResponse({"success": True})
 
     except Exception as e:
-        print("Error sending notification:", e)
-        return HttpResponse("False")
+        return JsonResponse({"success": False, "message": str(e)})
+
+    
+
+
+
