@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from student_management_app.models import  CustomUser,Courses, Staffs,NotificationStudent, Students, Subjects ,LeaveReportStudent,FeedbackStudent,Attendance,AttendanceReport
+from student_management_app.models import  CustomUser,Courses,StudentResult, Staffs,NotificationStudent, Students, Subjects ,LeaveReportStudent,FeedbackStudent,Attendance,AttendanceReport
 from django.http import HttpResponse, HttpResponseRedirect
 from datetime import datetime
 from django.contrib import messages
@@ -149,9 +149,9 @@ def student_all_notification(request):
     notifications=NotificationStudent.objects.filter(student_id=student)
     return render(request,"student_template/all_notification.html",{"notifications":notifications})
 
-#def student_view_result(request):
-    #student=Students.objects.get(admin=request.user.id)
-    #studentresult=StudentResult.objects.filter(student_id=student.id)
-    #return render(request,"student_template/student_result.html",{"studentresult":studentresult})
+def student_view_result(request):
+    student=Students.objects.get(admin=request.user.id)
+    studentresult=StudentResult.objects.filter(student_id=student.id)
+    return render(request,"student_template/student_result.html",{"studentresult":studentresult})
 
 

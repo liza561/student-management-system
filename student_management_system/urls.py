@@ -23,7 +23,7 @@ from student_management_app  import StaffViews, StudentViews
 from student_management_system import settings
 from django.views.generic import TemplateView
 from django.views.static import serve
-
+from student_management_app.EditResultViewClass import EditResultViewClass
 
 urlpatterns = [
        path('firebase-messaging-sw.js', serve, {
@@ -34,6 +34,12 @@ urlpatterns = [
 
     # Route for demo page, used for testing or demonstration purposes
     path('demo', views.ShowDemoPage),
+    path('signup_admin',views.signup_admin,name="signup_admin"),
+    path('signup_student',views.signup_student,name="signup_student"),
+    path('signup_staff',views.signup_staff,name="signup_staff"),
+    path('do_admin_signup',views.do_admin_signup,name="do_admin_signup"),
+    path('do_staff_signup',views.do_staff_signup,name="do_staff_signup"),
+    path('do_signup_student',views.do_signup_student,name="do_signup_student"),
     path('admin/', admin.site.urls),
     path('accounts/',include('django.contrib.auth.urls')),
     path('', views.ShowLoginPage,name="show_login"),
@@ -84,8 +90,8 @@ urlpatterns = [
     path('admin_send_notification_student', Hodviews.admin_send_notification_student,name="admin_send_notification_student"),
     path('send_student_notification', Hodviews.send_student_notification,name="send_student_notification"),
     path('send_staff_notification', Hodviews.send_staff_notification,name="send_staff_notification"),
-    #path('firebase-messaging-sw.js',views.showFirebaseJS,name="show_firebase_js"),    
-    #path('save-fcm-token/', Hodviews.save_fcm_token, name='save_fcm_token'),
+        
+   
     
     
     
@@ -108,10 +114,10 @@ urlpatterns = [
     path('staff_profile_save', StaffViews.staff_profile_save,name="staff_profile_save"),
     path('staff_fcmtoken_save', StaffViews.staff_fcmtoken_save, name="staff_fcmtoken_save"),
     path('staff_all_notification', StaffViews.staff_all_notification, name="staff_all_notification"),
-    #path('staff_add_result', StaffViews.staff_add_result, name="staff_add_result"),
-    #path('save_student_result', StaffViews.save_student_result, name="save_student_result"),
-    #path('edit_student_result',EditResultViewClass.as_view(), name="edit_student_result"),
-    #path('fetch_result_student',StaffViews.fetch_result_student, name="fetch_result_student"),
+    path('staff_add_result', StaffViews.staff_add_result, name="staff_add_result"),
+    path('save_student_result', StaffViews.save_student_result, name="save_student_result"),
+    path('edit_student_result',EditResultViewClass.as_view(), name="edit_student_result"),
+    path('fetch_result_student',StaffViews.fetch_result_student, name="fetch_result_student"),
     #path('start_live_classroom',StaffViews.start_live_classroom, name="start_live_classroom"),
     #path('start_live_classroom_process',StaffViews.start_live_classroom_process, name="start_live_classroom_process"),    
    
@@ -129,7 +135,7 @@ urlpatterns = [
     path('student_fcmtoken_save', StudentViews.student_fcmtoken_save, name="student_fcmtoken_save"),
     #path('firebase-messaging-sw.js',views.showFirebaseJS,name="show_firebase_js"),
     path('student_all_notification',StudentViews.student_all_notification,name="student_all_notification"),
-    #path('student_view_result',StudentViews.student_view_result,name="student_view_result"),
+    path('student_view_result',StudentViews.student_view_result,name="student_view_result"),
     #path('node_modules/canvas-designer/widget.html',StaffViews.returnHtmlWidget,name="returnHtmlWidget"),
-   # path('testurl/',views.Testurl)
+    path('testurl/',views.Testurl)
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -143,9 +143,6 @@
     if (parts.length === 2) return parts.pop().split(';').shift();
   }
 
-  // Example usage: call this with the current user type & id (render into template)
-  // requestAndSaveToken('student', 42);
-  // or requestAndSaveToken('staff', 11);
 
   // When the app is in the foreground, receive messages here:
   onMessage(messaging, (payload) => {
@@ -168,12 +165,12 @@
             csrfmiddlewaretoken: "{{ csrf_token }}"
         },
 
-        success: function(resp) {
-            if (resp.success) {
+        success: function(response) {
+            if (response.success) {
                 alert("Message Sent Successfully!");
             } 
             else {
-                alert("Failed: " + resp.message);
+                alert("Failed: " + response.message);
             }
         },
 
