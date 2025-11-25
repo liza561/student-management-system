@@ -26,10 +26,10 @@ from django.views.static import serve
 from student_management_app.EditResultViewClass import EditResultViewClass
 
 urlpatterns = [
-       path('firebase-messaging-sw.js', serve, {
-        'document_root': settings.STATIC_ROOT,
-        'path': 'firebase-messaging-sw.js'
-    }),
+       #path('firebase-messaging-sw.js', serve, {
+        #'document_root': settings.STATIC_ROOT,
+        #'path': 'firebase-messaging-sw.js'
+    #}),
 
 
     # Route for demo page, used for testing or demonstration purposes
@@ -118,8 +118,7 @@ urlpatterns = [
     path('save_student_result', StaffViews.save_student_result, name="save_student_result"),
     path('edit_student_result',EditResultViewClass.as_view(), name="edit_student_result"),
     path('fetch_result_student',StaffViews.fetch_result_student, name="fetch_result_student"),
-    #path('start_live_classroom',StaffViews.start_live_classroom, name="start_live_classroom"),
-    #path('start_live_classroom_process',StaffViews.start_live_classroom_process, name="start_live_classroom_process"),    
+    
    
     
     # student url path
@@ -136,6 +135,5 @@ urlpatterns = [
     #path('firebase-messaging-sw.js',views.showFirebaseJS,name="show_firebase_js"),
     path('student_all_notification',StudentViews.student_all_notification,name="student_all_notification"),
     path('student_view_result',StudentViews.student_view_result,name="student_view_result"),
-    #path('node_modules/canvas-designer/widget.html',StaffViews.returnHtmlWidget,name="returnHtmlWidget"),
     path('testurl/',views.Testurl)
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

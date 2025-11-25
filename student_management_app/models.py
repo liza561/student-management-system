@@ -60,7 +60,7 @@ class Students(models.Model):
     gender = models.CharField(max_length=10)
     profile_pic = models.FileField()
     address = models.TextField()
-    course_id = models.ForeignKey('courses', on_delete=models.DO_NOTHING)
+    course_id = models.ForeignKey('Courses', on_delete=models.DO_NOTHING)
     session_year_id=models.ForeignKey(SessionYearModel,on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -162,22 +162,26 @@ class OnlineClassRoom(models.Model):
 
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
-            AdminHOD = apps.get_model('student_management_app', 'AdminHOD')
-            Staffs = apps.get_model('student_management_app', 'Staffs')
-            Students = apps.get_model('student_management_app', 'Students')
-            if created:
-                if instance.user_type==1:
-                    AdminHOD.objects.create(admin=instance)
-                if instance.user_type==2:
-                    Staffs.objects.create(admin=instance, address="")
-                if instance.user_type==3:
-                    Students.objects.create(admin=instance,course_id=Courses.objects.get(id=1), session_year_id=SessionYearModel.objects.get(id=1), address="", gender="", profile_pic="")
-                 
+    if created:
+        if instance.user_type == "1":
+            AdminHOD.objects.create(admin=instance)
+        elif instance.user_type == "2":
+            Staffs.objects.create(admin=instance, address="")
+        elif instance.user_type == "3":
+            Students.objects.create(
+                admin=instance,
+                course_id=Courses.objects.get(id=1),
+                session_year_id=SessionYearModel.objects.get(id=1),
+                address="",
+                gender="",
+                profile_pic=""
+            )
+
 @receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):
-            if instance.user_type==1:
-                instance.adminhod.save()
-                if instance.user_type==2:
-                    instance.staffs.save()
-                    if instance.user_type==3:
-                        instance.students.save()
+    if instance.user_type == "1":
+        instance.adminhod.save()
+    elif instance.user_type == "2":
+        instance.staffs.save()
+    elif instance.user_type == "3":
+        instance.students.save()

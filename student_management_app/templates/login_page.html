@@ -22,7 +22,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="../../index2.html"><b>Student</b>Management System</a>
+    <a href="../../index2.html"><b>Student Management System</b></a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
@@ -59,6 +59,15 @@
           <div class="col-12 text-center">
             <a href="{% url 'password_reset' %}">Reset Password</a>
           </div>
+          <div class="col-12 text-center">
+            <a href="{% url 'signup_admin' %}">Admin signup for testing</a>
+          </div>
+          <div class="col-12 text-center">
+            <a href="{% url 'signup_staff' %}">Staff signup for testing</a>
+          </div>
+          <div class="col-12 text-center">
+            <a href="{% url 'signup_student' %}">Student signup for testing</a>
+          </div>                         
         </div>
         <div class="row">
           {% if messages %}
@@ -67,6 +76,9 @@
             {% if message.tags == "error" %}
            <div class="alert alert-danger" style="margin-top: 10px;">{{ message }}</div>
            {% endif %}
+            {% if message.tags == "success" %}
+           <div class="alert alert-success" style="margin-top: 10px;">{{ message }}</div>
+           {% endif %}           
            {%endfor %}
         </div>
         {% endif %}

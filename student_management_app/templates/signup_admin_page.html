@@ -22,14 +22,14 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="../../index2.html"><b>Student</b>Management System</a>
+    <a href="../../index2.html"><b>Student Management System</b></a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
       <p class="login-box-msg">Sign Up Admin to Student Management System</p>
 
-      <form action="/do_admin_signup" method="post">
+      <form action="{% url 'do_admin_signup' %}" method="post">
         {% csrf_token %}
         <div class="input-group mb-3">
           <input type="email" class="form-control" placeholder="Email" name="email">
@@ -58,9 +58,9 @@
         <div class="row">
     
           <!-- /.col -->
-          <div class="col-12">
-            <button type="submit" class="btn btn-primary btn-block">Signup Admin</button>
-          </div><!-- /.col -->
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary btn-block">Signup Admin</button>
+        </div><!-- /.col -->
           
         <div class="row">
           {% if messages %}

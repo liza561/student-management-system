@@ -75,6 +75,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 def Testurl(request):
+    _ = request.method
     return HttpResponse("Ok")
 
 def signup_admin(request):
@@ -89,9 +90,9 @@ def signup_staff(request):
     return render(request,"signup_staff_page.html")
 
 def do_admin_signup(request):
-    username=request.POST.get("username")
-    email=request.POST.get("email")
-    password=request.POST.get("password")
+    username = request.POST.get("username")
+    email = request.POST.get("email")
+    password = request.POST.get("password")
 
     try:
         user=CustomUser.objects.create_user(username=username,password=password,email=email,user_type=1)
@@ -103,19 +104,29 @@ def do_admin_signup(request):
         return HttpResponseRedirect(reverse("show_login"))
 
 def do_staff_signup(request):
-    username=request.POST.get("username")
-    email=request.POST.get("email")
-    password=request.POST.get("password")
-    address=request.POST.get("address")
+    username = request.POST.get("username")
+    email = request.POST.get("email")
+    password = request.POST.get("password")
+    address = request.POST.get("address")
 
     try:
-        user=CustomUser.objects.create_user(username=username,password=password,email=email,user_type=2)
-        user.staffs.address=address
-        user.save()
-        messages.success(request,"Successfully Created Staff")
+        user = CustomUser.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            user_type=2
+        )
+
+        Staffs.objects.create(
+            admin=user,
+            address=address
+        )
+
+        messages.success(request, "Successfully Created Staff")
         return HttpResponseRedirect(reverse("show_login"))
-    except:
-        messages.error(request,"Failed to Create Staff")
+
+    except Exception as e:
+        messages.error(request, f"Failed to Create Staff: {e}")
         return HttpResponseRedirect(reverse("show_login"))
 
 def do_signup_student(request):
@@ -135,17 +146,33 @@ def do_signup_student(request):
     profile_pic_url = fs.url(filename)
 
     try:
-        user = CustomUser.objects.create_user(username=username, password=password, email=email, last_name=last_name,first_name=first_name, user_type=3)
-        user.students.address = address
+        # Create User
+        user = CustomUser.objects.create_user(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            user_type=3
+        )
+
+        # Fetch FK objects
         course_obj = Courses.objects.get(id=course_id)
-        user.students.course_id = course_obj
-        session_year = SessionYearModel.objects.get(id=session_year_id)
-        user.students.session_year_id = session_year
-        user.students.gender = sex
-        user.students.profile_pic = profile_pic_url
-        user.save()
+        session_year_obj = SessionYearModel.objects.get(id=session_year_id)
+
+        # Create Student object
+        Students.objects.create(
+            admin=user,
+            gender=sex,
+            profile_pic=profile_pic_url,
+            address=address,
+            course_id=course_obj,
+            session_year_id=session_year_obj
+        )
+
         messages.success(request, "Successfully Added Student")
         return HttpResponseRedirect(reverse("show_login"))
-    except:
-        messages.error(request, "Failed to Add Student")
+
+    except Exception as e:
+        messages.error(request, f"Failed to Add Student: {e}")
         return HttpResponseRedirect(reverse("show_login"))
